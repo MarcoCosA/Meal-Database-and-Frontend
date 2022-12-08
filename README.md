@@ -3,7 +3,12 @@ This is the Final Project for CPSC 408: Database Management
 
 
 ### Marco this is how to test code using our virtual environment
-    venv/bin/python3.10 <example.py>
+    Old version:
+        venv/bin/python3.10 <example.py>
+    Better version:
+        source ./venv/bin/activate
+    Turn off better version:
+        deactivate
 
 ### Resources
     https://pythonhow.com/python-tutorial/flask/Adding-CSS-styling-to-your-website/
