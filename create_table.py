@@ -9,7 +9,8 @@ CREATE TABLE users(
 recipe_table = '''
 CREATE TABLE recipes(
     recipeID INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    recipeName VARCHAR(32),
+    recipeName VARCHAR(128),
+    deleted BOOLEAN DEFAULT False,
     userID INTEGER
 );
 '''
@@ -18,7 +19,7 @@ food_table = '''
 CREATE TABLE foods(
     foodID INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
     storeID Integer,
-    foodName VARCHAR(32)
+    foodName VARCHAR(128)
 );
 '''
 
@@ -33,6 +34,7 @@ CREATE TABLE foodrecipe(
 instruction_table = '''
 CREATE TABLE instructions(
     instructionID INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    instructionText TEXT,
     sourceURL VARCHAR(128),
     recipeID INTEGER
 );
@@ -41,8 +43,8 @@ CREATE TABLE instructions(
 store_table = '''
 CREATE TABLE stores(
     storeID INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    storeName VARCHAR(32),
-    address VARCHAR(64)
+    storeName VARCHAR(64),
+    address VARCHAR(128)
 );
 '''
 

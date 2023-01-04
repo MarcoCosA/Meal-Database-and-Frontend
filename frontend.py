@@ -18,7 +18,19 @@ def home():
     recipeName=""
     if request.method == "POST":
         print(request.form)
-        recipeName = request.form.get("recipebox")
+        recipeSelect = request.form.get("recipe")
+
+        if (recipeSelect != None):
+            values = recipeSelect.split("+")
+            rName = values[0]
+            recipe = db.getRecipesName(recipeName=rName.lower())[0]
+            user = db.getuserfromrecipe(recipeID=recipe[1])
+            print(recipe)
+
+            return redirect(url_for('recipe', id=recipe[1]))
+        
+        else:
+            recipeName = request.form.get("recipebox")
 
 
     
@@ -82,7 +94,35 @@ def signout():
 @app.route("/recipe/<id>")
 def recipe(id):
     global globals
-    return render_template("/", globals=globals)
+    global foodItemCount
+    values = db.fromRecipeIDgetEverything(id)[0]
+    fList = db.getFoodList(id)
+    foodList = []
+    for f in fList:
+        if f[1] == 0:
+            foodList.append((f[0], "Amazon Fresh"))
+        else:
+            foodList.append((f[0], "Ralphs"))
+
+    data = {"recipename": "", 
+            "instructions": "",
+            "url": "",
+            "foodList": [""],
+            "username": ""
+            }
+    
+    data["recipename"] = values[1]
+    data["username"] = values[2]
+    data["instructions"] = values[4]
+    data["url"] = values[5]
+    data["foodList"] = foodList
+    print(values)
+    
+    
+    
+    
+    
+    return render_template("recipe.html", globals=globals, data=data)
 
 @app.route("/sign-in", methods=["GET", "POST"])
 def signin():
@@ -174,32 +214,31 @@ def create():
             
             if recipename == '' or instructions == '' or url == '':
                 return render_template("create.html", globals=globals, result=result, foodItemCount=foodItemCount, data=data, badValues=True, alreadyadded=False)
-            query = db.queryinstructionsURLcount(url)
-            if query != 0:
-                return render_template("create.html", globals=globals, result=result, foodItemCount=foodItemCount, data=data, badValues=False, alreadyadded=True)
-            else:
-                print("OOOOOOOOOOOOOOOOOOOO")
-                userid = db.queryNamesID(globals["currentName"])
-                print(userid)
-                db.insertRecipe(recipeName=recipename, userID=userid)
-                print("asdlfas;ldfkaskldfj")
-                print(recipename)
-                print(type(recipename))
-                print(userid)
-                print(type(userid))
-                recipeid = db.queryRecipeID(recipeName=recipename, userID=int(userid))
-                for food in foodList:
-                    print(food)
-                    flist = food.split(" - ")
-                    print(flist)
-                    foodid = ''
-                    if flist[1] == 'Amazon Fresh':
-                        foodid = db.queryFoodID(storeID=1, foodName=flist[0])
-                    else:
-                        foodid = db.queryFoodID(storeID=2, foodName=flist[0])
-                        
-                    db.insertFoodRecipe(recipeID=int(recipeid), foodID=int(foodid)) 
-                return redirect(url_for('home'))
+
+            print("OOOOOOOOOOOOOOOOOOOO")
+            userid = db.queryNamesID(globals["currentName"])
+            print(userid)
+            #db.insertRecipe()
+            db.insertRecipe_Instructions(recipeName=recipename, userID=userid, instructionText=instructions, sourceURL=url)
+            print("GOT TO HERE 0_0")
+            recipeid = db.queryRecipeID(recipeName=recipename.lower(), userID=int(userid))
+            print("ALDLKFLKSDKLFJLSLDKFJSL")
+            print(recipeid)
+            print("jlasd;fkaslkdfkasdklfklsdf")
+            for food in foodList:
+                print(food)
+                flist = food.split(" - ")
+                print(flist)
+                foodid = ''
+                if flist[1] == 'Amazon Fresh':
+                    foodid = db.queryFoodID(storeID=1, foodName=flist[0])
+                else:
+                    foodid = db.queryFoodID(storeID=2, foodName=flist[0])
+                    
+                db.insertFoodRecipe(recipeID=int(recipeid), foodID=int(foodid)) 
+            return redirect(url_for('home'))
+            
+            
         foodItemCount += 1
             
         

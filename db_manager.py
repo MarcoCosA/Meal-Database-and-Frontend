@@ -77,17 +77,27 @@ def insertUser(username, password):
     mydb.commit()
     return
 
-def insertRecipe(recipeName, userID):
-    insert = '''INSERT INTO recipes (recipeName, userID) 
-    VALUES ('{}', {})'''.format(recipeName, userID)
-    mycursor.execute(insert)
+def insertRecipe_Instructions(recipeName, userID, instructionText, sourceURL):
+    mycursor.execute('''START TRANSACTION;''')
+    mycursor.execute('''SELECT @recipeID:= COUNT(*)+1 FROM recipes;''')
+    mycursor.execute('''INSERT INTO recipes (recipeName, userID) VALUES ('{}', {});'''.format(recipeName, userID))
+    mycursor.execute('''INSERT INTO instructions (instructionText, sourceURL, recipeID) 
+    VALUES ('{}', '{}', @recipeID);
+    '''.format(instructionText, sourceURL))
+    mycursor.execute('''COMMIT;''')
+    
+    
+    
+    
+    #print(transaction)
+    #mycursor.execute(transaction, multi=True)
     mydb.commit()
     return
 
 def queryRecipeID(recipeName, userID):
     query = """SELECT recipeID
     FROM recipes
-    WHERE LOWER(recipeName) = LOWER('{}') AND userID = {};
+    WHERE LOWER(recipeName) = '{}' AND userID = {};
     """.format(recipeName, userID)
     
     mycursor.execute(query)
@@ -270,5 +280,43 @@ def getfoodsinrecipeCount(recipeID):
     mycursor.execute(query)
     count = mycursor.fetchone()[0]
     return count
+
+
+    
+
+def fromRecipeIDgetEverything(recipeID):
+    print(recipeID)
+    print("LKWEKLKWLEKLKEWKL")
+    view = """SELECT R.recipeID, R.recipeName, U.username, U.userID, I.instructionText, I.sourceURL
+    FROM recipes R
+    JOIN users U on (R.userID = U.userID)
+    JOIN instructions I on (R.recipeID = I.recipeID)
+    """
+    
+    items = """SELECT *
+    FROM ({}) AS B
+    WHERE recipeID = {};
+    """.format(view, recipeID)
+    mycursor.execute(items)
+    items = mycursor.fetchall()
+    print("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    print(items)
+    return items
+#foodName, storeID, recipes.recipeID
+def getFoodList(recipeID):
+    query = """SELECT F.foodName, F.storeID
+    FROM recipes R
+    JOIN foodrecipe FR on (R.recipeID = FR.recipeID)
+    JOIN foods F on (FR.foodID = F.foodID)
+    WHERE FR.recipeID = {};
+    """.format(recipeID)
+    
+    mycursor.execute(query)
+    result = mycursor.fetchall()
+    print()
+    print(result)
+    print()
+    return result
+
 
 #mydb.close()
