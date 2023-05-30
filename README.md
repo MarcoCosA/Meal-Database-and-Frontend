@@ -1,28 +1,7 @@
-# FoodProject408
+# Meal Database and Frontend
 This is the Final Project for CPSC 408: Database Management
 
-### TEACHER FOR GRADING
-    To create the table type in MySQL:
-
-        DROP DATABASE foodprojectdb;
-        CREATE DATABASE foodprojectdb;
-        USE foodprojectdb;
-    You must also sign into mysql as root and...
-        create a user named: food
-        with password: p@$$w0rd
-    It needs permissions:
-        GRANT CREATE, ALTER, DROP, CREATE VIEW, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'food'@'localhost' WITH GRANT OPTION;
-    To access the virtual environment make sure you are in:
-        /FoodProject408
-    There make sure to type:
-        source ./venv/bin/activate
-    You should see a (venv) next to your name now.
-    Then enter:
-        python3 frontend.py
-    To run the program.
-
-
-### Marco this is how to test code using our virtual environment
+### This is how to test code using our virtual environment
     Old version:
         venv/bin/python3.10 <example.py>
     Better version:
